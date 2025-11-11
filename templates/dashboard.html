@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Autodialer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🔊 AI Autodialer</h1>
+        <p class="subtitle">Voice-powered calling with AI commands</p>
+        
+        <!-- AI Voice Command Section -->
+        <div class="ai-section">
+            <h3>🎯 AI Voice Commands</h3>
+            <div class="voice-controls">
+                <input type="text" id="aiCommand" placeholder="Say: 'call 18005551234' or 'make a call to +918126963928'">
+                <div class="voice-buttons">
+                    <button onclick="processAICommand()" id="textCommandBtn">Execute Command</button>
+                    <button onclick="startVoiceCommand()" id="voiceCommandBtn">🎤 Voice Command</button>
+                </div>
+            </div>
+            <p class="note">💡 Click voice button and say: "call [number]" or "dial [number]"</p>
+        </div>
+        
+        <div class="input-section">
+            <h3>Enter Phone Numbers (one per line):</h3>
+            <textarea id="phoneNumbers" rows="10" placeholder="18005551234&#10;18005559876&#10;18004443333&#10;..."></textarea>
+            
+            <div class="ai-options">
+                <label>
+                    <input type="checkbox" id="useAIVoice" checked> 
+                    Use AI Voice (Text-to-Speech)
+                </label>
+                <label>
+                    <input type="checkbox" id="useMockCalls" checked> 
+                    Use Demo Mode (Mock Calls)
+                </label>
+            </div>
+            
+            <p class="note">Use fake 1800 numbers for testing. Real calls work with verified numbers.</p>
+            <button onclick="startCalling()" id="callBtn">Start Bulk Calling</button>
+        </div>
+
+        <div id="progressSection" class="hidden">
+            <h3>Calling Progress</h3>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            <p id="progressText">Preparing calls...</p>
+            <p id="currentNumber"></p>
+            <div id="callStats" class="call-stats hidden">
+                <span id="connectedCount">0 connected</span>
+                <span id="failedCount">0 failed</span>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button onclick="viewLogs()">View Call Logs & Analytics</button>
+            <button onclick="testVoiceCommand()" class="btn-secondary">Test Voice Recognition</button>
+        </div>
+
+        <div id="voiceStatus" class="voice-status hidden">
+            <p>🎤 <strong>Listening...</strong> Speak your command now</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

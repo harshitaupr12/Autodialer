@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Analytics - AI Autodialer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Call Analytics</h1>
+        
+        <!-- Analytics Summary -->
+        <div class="analytics-summary">
+            <div class="stat-card">
+                <h3>Total Calls</h3>
+                <p class="stat-number">{{ total_calls }}</p>
+            </div>
+            <div class="stat-card success">
+                <h3>Connected</h3>
+                <p class="stat-number">{{ connected_calls }}</p>
+            </div>
+            <div class="stat-card error">
+                <h3>Failed</h3>
+                <p class="stat-number">{{ failed_calls }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Success Rate</h3>
+                <p class="stat-number">
+                    {% if total_calls > 0 %}
+                        {{ ((connected_calls / total_calls) * 100)|round(1) }}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="/" class="btn">Back to Dashboard</a>
+        </div>
+
+        <div class="results-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Phone Number</th>
+                        <th>Status</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log[1] }}</td>
+                        <td class="status-{{ 'success' if 'connected' in log[2] else 'error' }}">{{ log[2] }}</td>
+                        <td>{{ log[4] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
