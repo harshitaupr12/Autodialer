@@ -11,11 +11,11 @@ function startCalling() {
         return;
     }
 
-    // Show progress section
+   
     document.getElementById('progressSection').classList.remove('hidden');
     document.getElementById('callStats').classList.remove('hidden');
     
-    // Start calling
+  
     fetch('/start_calling', {
         method: 'POST',
         headers: {
@@ -32,7 +32,7 @@ function startCalling() {
             alert(data.error);
             return;
         }
-        // Start checking progress
+       
         checkCallingProgress();
     })
     .catch(error => {
@@ -113,7 +113,7 @@ function startVoiceCommand() {
         document.getElementById('aiCommand').value = command;
         showVoiceResult(`🎤 Heard: "${command}"`);
         
-        // Auto-process after 1 second
+        
         setTimeout(() => {
             processAICommand();
         }, 1000);
@@ -199,7 +199,7 @@ function checkCallingProgress() {
             document.getElementById('progressText').textContent = `Progress: ${data.progress}%`;
             document.getElementById('currentNumber').textContent = data.current_number;
             
-            // Update call stats
+            
             updateCallStats();
             
             if (data.running) {
@@ -211,7 +211,7 @@ function checkCallingProgress() {
 }
 
 function updateCallStats() {
-    // Simulate real-time stats update
+
     const connected = Math.floor(Math.random() * 5);
     const failed = Math.floor(Math.random() * 3);
     document.getElementById('connectedCount').textContent = `${connected} connected`;
@@ -231,7 +231,7 @@ function viewLogs() {
     window.location.href = '/call_logs';
 }
 
-// Initialize voice features
+
 document.addEventListener('DOMContentLoaded', function() {
     const sampleNumbers = [
         '18005551234',
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     document.getElementById('phoneNumbers').value = sampleNumbers;
     
-    // Add voice command examples
+   
     const examples = [
         "call 18005551234",
         "make a call to 18004443333", 
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
         "call +918126963928"
     ];
     
-    // Voice command help
+ 
     const voiceHelp = document.createElement('div');
     voiceHelp.className = 'voice-help';
     voiceHelp.innerHTML = `
@@ -261,7 +261,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('.ai-section').appendChild(voiceHelp);
 });
 
-// Keyboard shortcuts
 document.addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.key === 'Enter') {
         startCalling();
