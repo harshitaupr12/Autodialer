@@ -11,12 +11,10 @@ from dotenv import load_dotenv
 load_dotenv()
 app = Flask(__name__)
 
-# Twilio configuration
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN') 
 TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 
-# Initialize database
 def init_db():
     conn = sqlite3.connect('numbers.db')
     c = conn.cursor()
@@ -28,16 +26,13 @@ def init_db():
 
 init_db()
 
-# Store calling status
 calling_status = {"running": False, "progress": 0, "current_number": "", "total": 0}
 
 def make_call(phone_number, use_ai_voice=True):
     """Make real call with Twilio OR mock call for demo"""
     try:
-        # Try real Twilio call first
         if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN:
             if use_ai_voice:
-                # AI Text-to-Speech message
                 twiml = f'''
                 <Response>
                     <Say voice="alice" language="en-US">
@@ -54,7 +49,6 @@ def make_call(phone_number, use_ai_voice=True):
                     twiml=twiml
                 )
             else:
-                # Default static message
                 call = client.calls.create(
                     to=phone_number,
                     from_=TWILIO_PHONE_NUMBER,
@@ -62,19 +56,15 @@ def make_call(phone_number, use_ai_voice=True):
                 )
             return call.sid, "connected - AI voice delivered"
         else:
-            # Mock call for demonstration
             return make_mock_call(phone_number, use_ai_voice)
             
     except Exception as e:
-        # Fallback to mock calls
         return make_mock_call(phone_number, use_ai_voice)
 
 def make_mock_call(phone_number, use_ai_voice=True):
     """Mock calling for demonstration"""
-    # Simulate call processing
     time.sleep(random.uniform(2, 4))
-    
-    # Realistic call outcomes
+
     outcomes = [
         ("connected - call answered", "00:25"),
         ("connected - voicemail", "00:15"), 
@@ -85,8 +75,7 @@ def make_mock_call(phone_number, use_ai_voice=True):
     ]
     
     status, duration = random.choice(outcomes)
-    
-    # Add AI voice indicator
+
     if use_ai_voice and "connected" in status:
         status += " with AI voice"
     
@@ -104,15 +93,12 @@ def call_numbers_async(phone_numbers, use_ai_voice=True):
             calling_status["current_number"] = f"Calling {i}/{len(phone_numbers)}: {number}"
             calling_status["progress"] = int((i / len(phone_numbers)) * 100)
             
-            # Make the call
+    
             call_sid, status = make_call(number, use_ai_voice)
-            
-            # Log the call
+
             c.execute("INSERT INTO calls (phone_number, status) VALUES (?, ?)",
                      (number, status))
             conn.commit()
-            
-            # Realistic delay between calls
             time.sleep(random.uniform(1, 3))
             
     except Exception as e:
@@ -135,8 +121,7 @@ def start_calling():
     
     if not phone_numbers:
         return jsonify({"error": "No phone numbers provided"})
-    
-    # Filter and validate numbers
+   
     valid_numbers = []
     for num in phone_numbers:
         clean_num = ''.join(filter(str.isdigit, num))
@@ -152,8 +137,7 @@ def start_calling():
     
     if not valid_numbers:
         return jsonify({"error": "No valid phone numbers found"})
-    
-    # Start calling in background thread
+
     thread = threading.Thread(target=call_numbers_async, args=(valid_numbers, use_ai_voice))
     thread.daemon = True
     thread.start()
@@ -171,8 +155,6 @@ def ai_command():
     
     if not command:
         return jsonify({"error": "No command provided"})
-    
-    # Extract number from command
     import re
     patterns = [
         r'call\s+(\+?[\d\s\-]+)',
@@ -190,8 +172,7 @@ def ai_command():
     
     if not phone_number:
         return jsonify({"error": "No phone number found in command"})
-    
-    # Clean and validate number
+
     clean_num = ''.join(filter(str.isdigit, phone_number))
     if len(clean_num) == 10:
         formatted_number = f"+91{clean_num}"
@@ -200,10 +181,10 @@ def ai_command():
     else:
         formatted_number = phone_number
     
-    # Make single call
+   
     call_sid, status = make_call(formatted_number, use_ai_voice)
     
-    # Log the call
+
     conn = sqlite3.connect('numbers.db')
     c = conn.cursor()
     c.execute("INSERT INTO calls (phone_number, status) VALUES (?, ?)",
@@ -229,7 +210,7 @@ def call_logs():
     logs = c.fetchall()
     conn.close()
     
-    # Calculate stats
+   
     total_calls = len(logs)
     connected_calls = len([log for log in logs if 'connected' in log[2]])
     failed_calls = total_calls - connected_calls
